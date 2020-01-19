@@ -1,0 +1,29 @@
+Determining if the jack_port_rename exist failed with the following output:
+Change Dir: /Users/kramerelwell/Projects/201B/allolib_playground/kramerelwell/build/Ass1/Release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_485bd/fast"
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f CMakeFiles/cmTC_485bd.dir/build.make CMakeFiles/cmTC_485bd.dir/build
+Building C object CMakeFiles/cmTC_485bd.dir/CheckSymbolExists.c.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc    -o CMakeFiles/cmTC_485bd.dir/CheckSymbolExists.c.o   -c /Users/kramerelwell/Projects/201B/allolib_playground/kramerelwell/build/Ass1/Release/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/Users/kramerelwell/Projects/201B/allolib_playground/kramerelwell/build/Ass1/Release/CMakeFiles/CMakeTmp/CheckSymbolExists.c:2:10: fatal error: '/jack/jack.h' file not found
+#include </jack/jack.h>
+         ^~~~~~~~~~~~~~
+1 error generated.
+make[1]: *** [CMakeFiles/cmTC_485bd.dir/CheckSymbolExists.c.o] Error 1
+make: *** [cmTC_485bd/fast] Error 2
+
+File /Users/kramerelwell/Projects/201B/allolib_playground/kramerelwell/build/Ass1/Release/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include </jack/jack.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef jack_port_rename
+  return ((int*)(&jack_port_rename))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
