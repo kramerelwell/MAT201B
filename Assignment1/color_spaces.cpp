@@ -73,7 +73,7 @@ struct AlloApp : App {
             like a spatial inverse to the cube... Looked cool enough... my machine runs to slow to experiment
             a whole lot with this... 
         */
-       
+
         Vec3f customPosition(   (cTwo.s * ((4.5 * pixel.r) * cos(cTwo.h * M_2PI)) * 0.005) - 2,
                                 (cTwo.s * ((4.5 * pixel.g) * sin(cTwo.h * M_2PI)) * 0.005) - 2,
                                 cTwo.s * ((4.5 * pixel.b) * sin(cTwo.h * M_2PI)) * 0.005);
@@ -103,12 +103,10 @@ struct AlloApp : App {
   }
 
 /*
-    Could use a confirmation here... Struggled with the interpolation and I dont know if its a product
-    of my graphics system being out of date, or if its because there aren't enough frames in the draw 
-    loop for the points to get to their destination and there is a fraction of a step left to travel... 
-    but my points don't always make it back home after interpolating.
+    Could use a confirmation here... Struggled with the interpolation, pretty sure its because there aren't 
+    enough frames in the draw loop for the points to get to their destination and there is a fraction of a 
+    step left to travel... 
 */
-
 
   bool onKeyDown(const Keyboard& k) override {
     if (k.key() == '1') {
