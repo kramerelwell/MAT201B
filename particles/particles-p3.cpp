@@ -40,6 +40,8 @@ struct AlloApp : App {
   vector<float> planetM     {330000, 317.83, 95.162, 14.536, 17.147, 1, 0.815, 0.107, 0.0553, 0.0022};  // Earth Mass       
   vector<float> planetD     {0, 5.20, 9.58, 19.2, 30.1, 1, 0.722, 1.52, 0.387, 39.5};                   // AU Dist
 
+
+
   void reset() {
     mesh.reset();
     velocity.clear();
@@ -47,28 +49,42 @@ struct AlloApp : App {
 
     auto rc = []() { return HSV(rnd::uniform(), 1.0f, 1.0f); };
 
-    for (int i = 0; i < planetM.size(); i++) {
-      mesh.vertex(sunDist(1.0, planetD[i]));            // set position
-      mass.push_back(planetM[i]);                       // set mass
-      
-      if (i == 0) {                                     // set size
+    for (int i = 0; i < 500; i++) {
+      float d = (i < 10 ? planetD[i] : rnd::uniform(30.0)+1);                           // set position
+      mesh.vertex(sunDist(1.0, d));                                            
+
+
+      float m = 0;                                                                      // set mass
+      if (i < 10) { m = planetM[i]; }                                                   
+      else if (10 <= i <= 100) { m = rnd::uniform(0.00001) + 0.00001;} 
+      else if (100 < i <= 250) { m = rnd::uniform(0.0000077) + 0.0000077;} 
+      else if (250 < i <= 500) { m = rnd::uniform(0.00000001) + 0.00000001;}
+      mass.push_back(m);
+
+      if (i == 0) {                                                                     // set size and color
         mesh.texCoord(pow(planetM[i], 1.0 / 7), 0);     
         mesh.color(RGB(1,1,1));
       }
-      else if (i != 0) {
+      else if (0 < i < 10) {
         mesh.color(rc());
         float size = pow(planetM[i], 1.0 / 3.0);
         if (size < 2.5 ? size = 2.5 : size);
+        mesh.texCoord(size, 0); 
+      }
+      else if (i >= 10) {
+        mesh.color(RGB(0.5,0.5,0.5));
+        float size = pow(m, 1.0 / 3.0);
+        if (size < 1 ? size = 1 : size);
         mesh.texCoord(size, 0); 
       }
     
       // (2 * M_PI * planetD[i]) / days[i]
       // sqrt((gravCon * planetM[i]) / planetD[i])
 
-      Vec3f initV(0, sqrt((gravCon * planetM[0]) / planetD[i]), 0);
+      Vec3f initV(0, sqrt((gravCon * planetM[0]) / d), 0);                            // set Veloicty
       velocity.push_back(initV);
  
-      acceleration.push_back(0);
+      acceleration.push_back(0);                                                      // set acceleration
     }
   }
                            
