@@ -32,7 +32,7 @@ struct DrawableAgent {
   }
 };
 
-#define N (888)
+#define N (5)
 struct SharedState {
   Pose cameraPose;
   float background;
@@ -67,7 +67,6 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
 
 
 
-
     void onCreate() override {
         cuttleboneDomain =
             CuttleboneStateSimulationDomain<SharedState>::enableCuttlebone(this);
@@ -85,16 +84,14 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
                             slurp("../point-fragment.glsl"),
                             slurp("../point-geometry.glsl"));
 
-        auto rc = []() { return HSV(rnd::uniform(), 1.0f, 1.0f); };
 
         mesh.primitive(Mesh::POINTS);
 
     for (int _ = 0; _ < N; _++) {
-        float m = 1;
-        Agent a; 
-        a.pos(rv(5));
+        float m = 1; 
+        agent[_].pos(rv(5));
 
-        mesh.vertex(a.pos());
+        mesh.vertex(agent[_].pos());
         mesh.color(HSV(0.41, 1.0, 0.851));
         mass.push_back(m);
         mesh.texCoord(pow(m, 1.0f / 3), 0); 
@@ -132,6 +129,7 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
             for (int i = 0; i < velocity.size(); i++) {
                 velocity[i] += acceleration[i] / mass[i] * dt;
                 agent[i].pos() += velocity[i] * dt;
+                mesh.vertices()[i] = agent[i].pos();
             }
 
             for (auto &a : acceleration)
@@ -156,22 +154,13 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
 
         // EVERYONE ASSIGNS POSITION AND COLOR TO VECTICES HERE
         vector<Vec3f>& position(mesh.vertices());
-        vector<Color>& color(mesh.colors());
+        vector<Color>& c(mesh.colors());
         for (int i = 0; i < N; i++) {
             position[i] = state().agent[i].position;
-            color[i].set(rnd::uniform(0.0,1.0), rnd::uniform(0.0,1.0), rnd::uniform(0.0,1.0));
+            c[i].set(rnd::uniform(0.0,1.0), rnd::uniform(0.0,1.0), rnd::uniform(0.0,1.0));
         }
     }
 
-
-    bool onKeyDown(const Keyboard &k) override {
-    if (k.key() == '1') {
-        for (int i = 0; i < velocity.size(); i++) {
-        acceleration[i] = rv(1) / mass[i];
-        }
-    }
-    return true;
-    }
 
 
     void onDraw(Graphics &g) override {
