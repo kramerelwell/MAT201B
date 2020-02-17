@@ -32,7 +32,7 @@ struct DrawableAgent {
   }
 };
 
-#define N (5)
+#define N (888)
 struct SharedState {
   Pose cameraPose;
   float background;
@@ -89,7 +89,9 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
 
     for (int _ = 0; _ < N; _++) {
         float m = 1; 
-        agent[_].pos(rv(5));
+        Agent a;
+        a.pos(rv(5));
+        agent.push_back(a);
 
         mesh.vertex(agent[_].pos());
         mesh.color(HSV(0.41, 1.0, 0.851));
