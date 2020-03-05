@@ -1,5 +1,11 @@
-// Remix pulled from Rodney DuPlessis particles_p1.cpp
-// from commit ""
+/*
+
+A distributed version of my remix of Rodney DuPlessis' particles-p1
+
+Looks like states are distributing properly when running multiple instances, but the trail 
+texture that Rodney made is only working in the main window. 
+
+*/
 
 #include "al/app/al_App.hpp"
 #include "al/math/al_Random.hpp"
@@ -20,7 +26,6 @@ Vec3f rv(float scale) {
 string slurp(string fileName); 
 
 
-// Even though we aren't using orientation here...
 struct Agent : Pose {
 };
 
@@ -41,19 +46,16 @@ struct SharedState {
 };
 
 
-
 struct AlloApp : public DistributedAppWithState<SharedState> {
     Parameter pointSize{"/pointSize", "", 1.0, "", 0.0, 2.0};
     Parameter timeStep{"/timeStep", "", 0.01, "", 0.01, 1.9};
     Parameter drag{"/drag", "", 0.01, "", 0, 1};
-
     ControlGUI gui;
 
     ShaderProgram pointShader;
 
     Mesh mesh;     
     Texture trail; 
-
     vector<Agent> agent;
 
     vector<Vec3f> velocity;
@@ -64,7 +66,6 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
 
     std::shared_ptr<CuttleboneStateSimulationDomain<SharedState>>
         cuttleboneDomain;
-
 
 
     void onCreate() override {
@@ -84,27 +85,26 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
                             slurp("../point-fragment.glsl"),
                             slurp("../point-geometry.glsl"));
 
-
         mesh.primitive(Mesh::POINTS);
 
-    for (int _ = 0; _ < N; _++) {
-        float m = 1; 
-        Agent a;
-        a.pos(rv(5));
-        agent.push_back(a);
+        for (int _ = 0; _ < N; _++) {
+            float m = 1; 
+            Agent a;
+            a.pos(rv(5));
+            agent.push_back(a);
 
-        mesh.vertex(agent[_].pos());
-        mesh.color(HSV(0.41, 1.0, 0.851));
-        mass.push_back(m);
-        mesh.texCoord(pow(m, 1.0f / 3), 0); 
+            mesh.vertex(agent[_].pos());
+            mesh.color(HSV(0.41, 1.0, 0.851));
+            mass.push_back(m);
+            mesh.texCoord(pow(m, 1.0f / 3), 0); 
 
-        velocity.push_back(rv(0.1));
-        acceleration.push_back(rv(1));
-    }
+            velocity.push_back(rv(0.1));
+            acceleration.push_back(rv(1));
+        }
     nav().pos(0, 0, 10);
   }
 
-    
+
     void onAnimate(double dt) override {
         if (cuttleboneDomain->isSender()) {
             int count = 0;
@@ -137,8 +137,6 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
             for (auto &a : acceleration)
             a.zero();
 
-
-            // COPY AGENT POSITIONS TO SHARED STATE
             for (unsigned i = 0; i < N; i++) {
                 state().agent[i].from(agent[i]);
             }
@@ -147,14 +145,12 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
             state().pointSize = pointSize.get();
             state().timeStep = timeStep.get();
             state().drag = drag.get();
+            
 
         } else {
             nav().set(state().cameraPose);
         }
 
-
-
-        // EVERYONE ASSIGNS POSITION AND COLOR TO VECTICES HERE
         vector<Vec3f>& position(mesh.vertices());
         vector<Color>& c(mesh.colors());
         for (int i = 0; i < N; i++) {
@@ -164,10 +160,9 @@ struct AlloApp : public DistributedAppWithState<SharedState> {
     }
 
 
-
     void onDraw(Graphics &g) override {
         float f = state().background;
-        g.clear(f, f, f);
+        g.clear(f);
         trail.resize(fbWidth(), fbHeight());
         g.tint(0.96);
         g.quadViewport(trail);
